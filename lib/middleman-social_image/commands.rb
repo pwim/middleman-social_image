@@ -14,20 +14,36 @@ module Middleman
       end
 
       def social_image
+        require "capybara"
         app = ::Middleman::Application.new do
           config[:mode]              = :config
           config[:watcher_disable]   = true
         end
         options = app.extensions[:social_image].options
+        Capybara.register_driver :selenium_chrome_headless do |app|
+          Capybara::Selenium::Driver.load_selenium
+          browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+            opts.args << "--window-size=#{options.window_size}"
+            opts.args << '--headless'
+            opts.args << '--disable-gpu' if Gem.win_platform?
+            opts.args << '--disable-site-isolation-trials'
+            opts.args << '--hide-scrollbars'
+          end
+          Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
+        end
+        session = Capybara::Session.new(:selenium_chrome_headless)
+
         app.sitemap.resources.each do |resource|
           if resource.url =~ options.social_image_url_pattern
             image_path = File.join(app.source_dir, options.base_asset_dir, resource.url.sub(options.social_image_url_pattern, options.social_image_url_substitution))
             if File.exists?(image_path)
-              say "Image for #{resource.url} already generated, skipping."
+              say "Skipping #{image_path} as already generated"
             else
+              say "Generating #{image_path}"
               FileUtils.mkdir_p(File.dirname(image_path))
               url = File.join(options.base_url, resource.url)
-              run "#{options.path_to_chrome}  --headless --disable-gpu --screenshot=#{image_path} --window-size=#{options.window_size} #{url}"
+              session.visit(url)
+              session.save_screenshot(image_path)
             end
           end
         end

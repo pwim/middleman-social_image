@@ -24,7 +24,6 @@ Optionally, you can configure this extension with the following (defaults are sh
 
 ```ruby
 activate :social_image do |social_image|
-  social_image.path_to_chrome = '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome' # Command to execute chrome
   social_image.window_size = '1200,600' # The size of the screenshot
   social_image.base_url = 'http://localhost:4567/' # Base URL of running middleman server
   social_image.base_asset_dir = 'assets/images/social-images' # Where to save the generated images
