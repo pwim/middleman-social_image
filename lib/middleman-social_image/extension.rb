@@ -7,4 +7,5 @@ class Middleman::SocialImage::Extension < ::Middleman::Extension
   option :base_asset_dir, 'assets/images/social-images'
   option :social_image_url_pattern, %r{(/social-image)/$}
   option :social_image_url_substitution, '\1.png'
+  option :selector, "body > *"
 end

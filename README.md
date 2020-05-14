@@ -29,6 +29,7 @@ activate :social_image do |social_image|
   social_image.base_asset_dir = 'assets/images/social-images' # Where to save the generated images
   social_image.social_image_url_pattern = %r{(/social-image)/$}  # Screenshot URLs matching this pattern
   social_image.social_image_url_substitution = '\1.png' # When generating screenshots, replace URLs matching social_image_url_pattern with this
+  social_image.selector = 'body > *' # Used to test that the social image url has loaded properly. The more specific this is, the better the chance of catching errors.
 end
 ```
 

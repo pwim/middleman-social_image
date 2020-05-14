@@ -43,7 +43,12 @@ module Middleman
               FileUtils.mkdir_p(File.dirname(image_path))
               url = File.join(options.base_url, resource.url)
               session.visit(url)
-              session.save_screenshot(image_path)
+              if session.has_selector?(options.selector)
+                session.save_screenshot(image_path)
+              else
+                say "Aborting. #{image_path} did not contain '#{options.selector}'. Is the preview server running?"
+                exit
+              end
             end
           end
         end
