@@ -14,31 +14,18 @@ module Middleman
       end
 
       def social_image
-        require "capybara"
+        require "middleman-social_image/capybara"
         app = ::Middleman::Application.new do
           config[:mode]              = :config
           config[:watcher_disable]   = true
         end
         options = app.extensions[:social_image].options
-        Capybara.server = :webrick
 
         rack_app = ::Middleman::Rack.new(app).to_app
         server = Capybara::Server.new(rack_app)
         server.boot
-
-        Capybara.register_driver :selenium_chrome_headless do |app|
-          Capybara::Selenium::Driver.load_selenium
-          browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
-            opts.args << "--window-size=#{options.window_size}"
-            opts.args << '--headless'
-            opts.args << '--disable-gpu' if Gem.win_platform?
-            opts.args << '--disable-site-isolation-trials'
-            opts.args << '--hide-scrollbars'
-          end
-          Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
-        end
         session = Capybara::Session.new(:selenium_chrome_headless)
-
+        session.current_window.resize_to(*options.window_size.split(","))
         app.sitemap.resources.each do |resource|
           if resource.url =~ options.social_image_url_pattern
             image_path = File.join(app.source_dir, options.base_asset_dir, resource.url.sub(options.social_image_url_pattern, options.social_image_url_substitution))
