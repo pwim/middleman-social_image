@@ -15,32 +15,16 @@ module Middleman
 
       def social_image
         require "capybara"
-        require 'webrick'
         app = ::Middleman::Application.new do
           config[:mode]              = :config
           config[:watcher_disable]   = true
         end
         options = app.extensions[:social_image].options
-        r, w = IO.pipe
-
-        webrick = WEBrick::HTTPServer.new({
-          :Port => options.port,
-          :BindAddress => "localhost",
-          :StartCallback => Proc.new {
-            w.write(1)  # write "1", signal a server start message
-            w.close
-          }
-        })
+        Capybara.server = :webrick
 
         rack_app = ::Middleman::Rack.new(app).to_app
-        webrick.mount '/', ::Rack::Handler::WEBrick, rack_app
-        pid = fork do
-          r.close
-          trap("INT") { webrick.shutdown }
-          webrick.start
-        end
-        w.close
-        r.read(1)
+        server = Capybara::Server.new(rack_app)
+        server.boot
 
         Capybara.register_driver :selenium_chrome_headless do |app|
           Capybara::Selenium::Driver.load_selenium
@@ -63,7 +47,7 @@ module Middleman
             else
               say "Generating #{image_path}"
               FileUtils.mkdir_p(File.dirname(image_path))
-              url = File.join("http://localhost:#{options.port}", resource.url)
+              url = File.join(server.base_url, resource.url)
               session.visit(url)
               if session.has_selector?(options.selector)
                 session.save_screenshot(image_path)
@@ -74,8 +58,6 @@ module Middleman
             end
           end
         end
-      ensure
-        Process.kill('INT', pid) if pid
       end
     end
 
