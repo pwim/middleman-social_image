@@ -5,10 +5,10 @@ class Middleman::SocialImage::Converter
     @window_size = window_size
   end
 
-  def convert(resource)
+  def convert(source_url)
     image_path = File.join(@app.root, "tmp/middleman-social_image.png")
     FileUtils.mkdir_p(File.dirname(image_path))
-    session.visit(resource.url)
+    session.visit(source_url)
     session.save_screenshot(image_path)
     File.read(image_path)
   end

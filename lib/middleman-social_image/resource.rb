@@ -6,6 +6,6 @@ class Middleman::SocialImage::Resource < ::Middleman::Sitemap::Resource
   end
 
   def render(*)
-    @converter.convert(@base_resource)
+    @converter.convert(@base_resource.url)
   end
 end
