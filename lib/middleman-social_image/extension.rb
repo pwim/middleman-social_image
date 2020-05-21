@@ -11,31 +11,15 @@ class Middleman::SocialImage::Extension < ::Middleman::Extension
     @converter = Middleman::SocialImage::Converter.new(app, options.window_size, options.selector)
   end
 
-  def after_configuration
-    if app.build?
-      social_image_resources.each do |resource|
-        @converter.convert(resource)
-      end
-    end
-  end
-
   def manipulate_resource_list(resources)
     resources + social_image_resources.map do |resource|
       path = resource.path.sub(".html", ".png")
-      if app.build?
-        Middleman::Sitemap::Resource.new(
-          @app.sitemap,
-          path,
-          @converter.image_path(resource)
-        )
-      else
-        Middleman::SocialImage::Resource.new(
-          @app.sitemap,
-          path,
-          @converter,
-          resource
-        )
-      end
+      Middleman::SocialImage::Resource.new(
+        @app.sitemap,
+        path,
+        @converter,
+        resource
+      )
     end
   end
 
