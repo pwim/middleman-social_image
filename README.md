@@ -26,10 +26,12 @@ Optionally, you can configure this extension with the following (defaults are sh
 activate :social_image do |social_image|
   social_image.window_size = '1200,600' # The size of the screenshot
   social_image.selector = 'body > *' # Used to test that the social image url has loaded properly. The more specific this is, the better the chance of catching errors.
+  social_image.always_generate = true # Always regenerate images. Takes a long time, but ensures any changes are reflected.
+  social_image.parallel = true # Generate images in parallel.
 end
 ```
 
-Create a HTML page in your middleman app that contains the HTML you want to be rendered. Add `social_image: true` to the page to indicate it is the source for a social image.
+Create a HTML page in your middleman app that contains the HTML you want to be rendered. Add `social_image: true` to the page's front matter to indicate it is the source for a social image. You can also add it as an option if you're using a proxy page like the following.
 
 ``` ruby
 ["tom", "dick", "harry"].each do |name|
@@ -37,10 +39,6 @@ Create a HTML page in your middleman app that contains the HTML you want to be r
 end
 ```
 
-The URL for this should match the social_image_url_pattern (so by default, ending with `/social-image/`).
-
-Start up the middleman server with `bundle exec middleman server`
-
-Run the `bundle exec middleman social_image` command to generate images from any URLs matching social_image_url_pattern. The image will be saved to a location matching the URL of the resource used to generate it, with the social_image_url_substitution applied, in the base_asset_dir. So with the default settings, if for instance you had created a page at `/examples/social-image/`, this image would be saved at `assets/images/social-images/examples/social-image.png`.
-
 You can now refer to this image as normal within your middleman application.
+
+In preview mode, you don't need any other special setup. However, to generate the images in build, you also need to be running the preview server with `bundle exec middleman server`.

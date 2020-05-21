@@ -54,9 +54,9 @@ class Middleman::SocialImage::Extension < ::Middleman::Extension
     resources + social_image_source_resources.map do |resource|
       Middleman::SocialImage::Resource.new(
         @app.sitemap,
-        path,
+        path_for_source_resource(resource),
         @converter,
-        path_for_source_resource(resouce)
+        resource
       )
     end
   end
