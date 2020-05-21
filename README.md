@@ -29,7 +29,15 @@ activate :social_image do |social_image|
 end
 ```
 
-Create a HTML page in your middleman app that contains the HTML you want to be rendered. The URL for this should match the social_image_url_pattern (so by default, ending with `/social-image/`).
+Create a HTML page in your middleman app that contains the HTML you want to be rendered. Add `social_image: true` to the page to indicate it is the source for a social image.
+
+``` ruby
+["tom", "dick", "harry"].each do |name|
+  proxy "/social-image/#{name}.html", "/templates/social-image.html", social_image: true, locals: { name: name }
+end
+```
+
+The URL for this should match the social_image_url_pattern (so by default, ending with `/social-image/`).
 
 Start up the middleman server with `bundle exec middleman server`
 

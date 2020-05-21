@@ -6,13 +6,16 @@ class Middleman::SocialImage::Converter
     @selector = selector
   end
 
-  def convert(url)
-    session.visit(url)
+  def image_path(resource)
+    File.join(@app.root, "tmp/middleman-social_image", @app.config[:mode].to_s, resource.path.sub(".html", ".png"))
+  end
+
+  def convert(resource)
+    session.visit(resource.url)
     raise "#{url} did not contain '#{@selector}'." unless session.has_selector?(@selector)
-    image_path = File.join(@app.root, "tmp/middleman-social_image.png")
+    image_path = image_path(resource)
     FileUtils.mkdir_p(File.dirname(image_path))
     session.save_screenshot(image_path)
-    File.read(image_path)
   end
 
   private

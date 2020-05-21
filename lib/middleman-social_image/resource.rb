@@ -6,6 +6,7 @@ class Middleman::SocialImage::Resource < ::Middleman::Sitemap::Resource
   end
 
   def render(*)
-    @converter.convert(@base_resource.url)
+    @converter.convert(@base_resource)
+    File.read(@converter.image_path(@base_resource))
   end
 end
