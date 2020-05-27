@@ -28,6 +28,7 @@ activate :social_image do |social_image|
   social_image.selector = 'body > *' # Used to test that the social image url has loaded properly. The more specific this is, the better the chance of catching errors.
   social_image.always_generate = true # Always regenerate images. Takes a long time, but ensures any changes are reflected.
   social_image.parallel = true # Generate images in parallel.
+  social_image.base_url = "http://localhost:4567/" # When building the site, fetch against this URL.
 end
 ```
 
@@ -41,4 +42,4 @@ end
 
 You can now refer to this image as normal within your middleman application.
 
-In preview mode, you don't need any other special setup. However, to generate the images in build, you also need to be running the preview server with `bundle exec middleman server`.
+In preview mode, you don't need any other special setup. However, to generate the images in build, you also need to be running the preview server. While you can use `bundle exec middleman server`, using a concurrent server like puma can speed up the generation incredibly.
