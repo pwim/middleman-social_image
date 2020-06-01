@@ -1,9 +1,10 @@
 require "middleman-social_image/capybara"
 class Middleman::SocialImage::Converter
-  def initialize(app, window_size, selector, base_url)
+  def initialize(app, window_size, selector, always_generate, base_url)
     @app = app
     @window_size = window_size
     @selector = selector
+    @always_generate = always_generate
     @base_url = base_url
   end
 
@@ -13,11 +14,15 @@ class Middleman::SocialImage::Converter
 
   def convert(resource)
     image_path = image_path(resource)
-    @app.logger.debug "== social_image: converting #{resource.path}"
-    session.visit(File.join(@base_url, resource.url))
-    raise "#{resource.url} did not contain '#{@selector}'." unless session.has_selector?(@selector)
-    FileUtils.mkdir_p(File.dirname(image_path))
-    session.save_screenshot(image_path)
+    if File.exist?(image_path) && !@always_generate
+      @app.logger.debug "== social_image: skipping #{resource.path} as already in cache"
+    else
+      @app.logger.debug "== social_image: converting #{resource.path}"
+      session.visit(File.join(@base_url, resource.url))
+      raise "#{resource.url} did not contain '#{@selector}'." unless session.has_selector?(@selector)
+      FileUtils.mkdir_p(File.dirname(image_path))
+      session.save_screenshot(image_path)
+    end
   end
 
   private

@@ -3,6 +3,7 @@ require 'middleman-core'
 class Middleman::SocialImage::Extension < ::Middleman::Extension
   option :window_size, '1200,600'
   option :selector, "body > *"
+  option :always_generate, true
   option :parallel, true
   option :base_url, "http://localhost:4567/"
 
@@ -10,7 +11,7 @@ class Middleman::SocialImage::Extension < ::Middleman::Extension
     super
     require "middleman-social_image/converter"
     require "middleman-social_image/resource"
-    @converter = Middleman::SocialImage::Converter.new(app, options.window_size, options.selector, options.base_url)
+    @converter = Middleman::SocialImage::Converter.new(app, options.window_size, options.selector, options.always_generate, options.base_url)
   end
 
   def manipulate_resource_list(resources)
